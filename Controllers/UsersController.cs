@@ -14,22 +14,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Food_Delivery_API.Controllers;
 
-//[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly FoodDeliveryContext _foodDeliveryContext;
     private readonly IUserRepository _userRepository;
-    private readonly ITokenService _tokenService;
-    public UsersController(FoodDeliveryContext foodDeliveryContext, IUserRepository userRepository, ITokenService tokenService){
+    public UsersController(FoodDeliveryContext foodDeliveryContext, IUserRepository userRepository){
         _foodDeliveryContext = foodDeliveryContext;
         _userRepository = userRepository;
-        _tokenService = tokenService;
     }
 
 
     [HttpGet("{id}")]
+    [Authorize]
     [TypeFilter(typeof(User_ValidateUserIdActionFilterAttribute))]
     public IActionResult GetUserById(int id){
         return Ok(_userRepository.GetUserById(id));
@@ -38,24 +36,18 @@ public class UsersController : ControllerBase
     [HttpPost]
     [TypeFilter(typeof(User_ValidateCreateUserActionFilterAttribute))]
     public IActionResult CreateUser([FromBody]UserDto user){
-        var newUser = new NewUserDto(){
+        var User = new User(){
             Name = user.Name,
             Email = user.Email,
             Phone = user.Phone,
-            Address = user.Address,
-            Token = _tokenService.CreateToken(user)
+            Address = user.Address
         };
-        var newUserTester = new User(){
-            Name = user.Name,
-            Email = user.Email,
-            Phone = user.Phone,
-            Address = user.Address,
-        };
-        _userRepository.AddUser(newUserTester);
-        return Ok(newUser);
+        _userRepository.AddUser(User);
+        return Ok(User);
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     [TypeFilter(typeof(User_ValidateUserIdActionFilterAttribute))]
     public IActionResult UpdateUser(int id, UserDto userDto){
         _userRepository.UpdateUser(id, userDto);

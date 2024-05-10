@@ -1,8 +1,10 @@
 ﻿using Food_Delivery_API.Data;
 using Food_Delivery_API.Interfaces;
+using Food_Delivery_API.Models;
 using Food_Delivery_API.Repositories;
 using Food_Delivery_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,7 +16,13 @@ builder.Services.AddControllers();
   
 builder.Services.AddDbContext<FoodDeliveryContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("FoodDeliveryContext")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ITokenService, TokenService>();
+// builder.Services.AddScoped<ITokenService, TokenService>();
+
+// builder.Services.AddIdentity<User, IdentityRole>()
+//         .AddEntityFrameworkStores<FoodDeliveryContext>()
+//         .AddDefaultTokenProviders();
+
+// builder.Services.AddScoped<UserManager<User>>();
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = 

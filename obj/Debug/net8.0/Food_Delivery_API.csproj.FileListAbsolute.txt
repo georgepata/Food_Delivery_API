@@ -136,3 +136,9 @@
 /Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/runtimes/win/lib/net6.0/System.Windows.Extensions.dll
 /Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/obj/Debug/net8.0/Food_Delivery_API.sourcelink.json
 /Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.Internal.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.Extensions.Identity.Core.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.Extensions.Identity.Stores.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.Extensions.Options.dll

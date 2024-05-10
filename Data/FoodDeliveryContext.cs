@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Food_Delivery_API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Food_Delivery_API.Data;
@@ -51,5 +52,18 @@ public class FoodDeliveryContext : DbContext
             .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<User>().Property(e=>e.UserId).ValueGeneratedOnAdd().HasColumnName("UserId");
+
+        base.OnModelCreating(modelBuilder);
+        List<IdentityRole> roles = new List<IdentityRole>(){
+            new IdentityRole{
+                Name = "Admin",
+                NormalizedName = "ADMIN"
+            },
+            new IdentityRole{
+                Name = "User",
+                NormalizedName = "USER"
+            }
+        };
+        modelBuilder.Entity<IdentityRole>().HasData(roles);
     }
 }
