@@ -51,11 +51,11 @@ namespace Food_Delivery_API.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CityId = table.Column<int>(type: "int", nullable: false)
+                    CityId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -64,8 +64,7 @@ namespace Food_Delivery_API.Migrations
                         name: "FK_Users_Cities_CityId",
                         column: x => x.CityId,
                         principalTable: "Cities",
-                        principalColumn: "CityId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CityId");
                 });
 
             migrationBuilder.CreateTable(
@@ -113,6 +112,31 @@ namespace Food_Delivery_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RatingRestaurants",
+                columns: table => new
+                {
+                    RatingRestaurantId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rating = table.Column<double>(type: "float", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RestaurantId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RatingRestaurants", x => x.RatingRestaurantId);
+                    table.ForeignKey(
+                        name: "FK_RatingRestaurants_Restaurants_RestaurantId",
+                        column: x => x.RestaurantId,
+                        principalTable: "Restaurants",
+                        principalColumn: "RestaurantId");
+                    table.ForeignKey(
+                        name: "FK_RatingRestaurants_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MenuItems",
                 columns: table => new
                 {
@@ -135,6 +159,54 @@ namespace Food_Delivery_API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "DeliveryDrivers",
+                columns: table => new
+                {
+                    DeliveryDriverId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryDrivers", x => x.DeliveryDriverId);
+                    table.ForeignKey(
+                        name: "FK_DeliveryDrivers_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
+                {
+                    PaymentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.PaymentId);
+                    table.ForeignKey(
+                        name: "FK_Payments_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeliveryDrivers_OrderId",
+                table: "DeliveryDrivers",
+                column: "OrderId",
+                unique: true);
+
             migrationBuilder.CreateIndex(
                 name: "IX_MenuItems_MenuId",
                 table: "MenuItems",
@@ -156,6 +228,22 @@ namespace Food_Delivery_API.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payments_OrderId",
+                table: "Payments",
+                column: "OrderId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RatingRestaurants_RestaurantId",
+                table: "RatingRestaurants",
+                column: "RestaurantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RatingRestaurants_UserId",
+                table: "RatingRestaurants",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Restaurants_CityId",
                 table: "Restaurants",
                 column: "CityId");
@@ -170,19 +258,28 @@ namespace Food_Delivery_API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "DeliveryDrivers");
+
+            migrationBuilder.DropTable(
                 name: "MenuItems");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "Payments");
+
+            migrationBuilder.DropTable(
+                name: "RatingRestaurants");
 
             migrationBuilder.DropTable(
                 name: "Menus");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Restaurants");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Cities");

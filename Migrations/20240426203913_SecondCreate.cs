@@ -5,7 +5,7 @@
 namespace Food_Delivery_API.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingConstraintsOnUserPhone : Migration
+    public partial class SecondCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

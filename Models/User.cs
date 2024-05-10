@@ -6,12 +6,15 @@ namespace Food_Delivery_API.Models;
 
 public class User
 {
-	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	public int UserId { get; set; }
 
 	[Required]
 	[MaxLength(50)]
 	public string? Name { get; set; }
+
+	// [Required]
+	// [MaxLength(20)]
+	// public string? Password { get; set;}
 
 	[Required]
 	[MaxLength(50)]

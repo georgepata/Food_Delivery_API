@@ -16,15 +16,15 @@ public class FoodDeliveryContext : DbContext
         
     }
 
-    DbSet<User> Users { get; set; }
-    DbSet<Restaurant> Restaurants { get; set; }
-    DbSet<Order> Orders { get; set; }
-    DbSet<Menu> Menus { get; set; }
-    DbSet<MenuItem> MenuItems { get; set; }
-    DbSet<City> Cities { get; set; }
-    DbSet<RatingRestaurant> RatingRestaurants { get; set; }
-    DbSet<Payment> Payments { get; set; }
-    DbSet<DeliveryDriver> DeliveryDrivers { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<Restaurant> Restaurants { get; set; }
+    public DbSet<Order> Orders { get; set; }
+    public DbSet<Menu> Menus { get; set; }
+    public DbSet<MenuItem> MenuItems { get; set; }
+    public DbSet<City> Cities { get; set; }
+    public DbSet<RatingRestaurant> RatingRestaurants { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<DeliveryDriver> DeliveryDrivers { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder){
         modelBuilder.Entity<Order>()
             .HasOne(o => o.User)
@@ -49,5 +49,7 @@ public class FoodDeliveryContext : DbContext
             .WithMany(p => p.RatingRestaurants)
             .HasForeignKey(o => o.RestaurantId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        modelBuilder.Entity<User>().Property(e=>e.UserId).ValueGeneratedOnAdd().HasColumnName("UserId");
     }
 }
