@@ -5,19 +5,19 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Food_Delivery_API.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Food_Delivery_API.Data;
 
-public class FoodDeliveryContext : DbContext
+public class FoodDeliveryContext : IdentityDbContext<User>
 {
     public FoodDeliveryContext(DbContextOptions<FoodDeliveryContext> options) 
         :base(options)
     {
         
     }
-
-    public DbSet<User> Users { get; set; }
+    
     public DbSet<Restaurant> Restaurants { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Menu> Menus { get; set; }
@@ -51,7 +51,6 @@ public class FoodDeliveryContext : DbContext
             .HasForeignKey(o => o.RestaurantId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<User>().Property(e=>e.UserId).ValueGeneratedOnAdd().HasColumnName("UserId");
 
         base.OnModelCreating(modelBuilder);
         List<IdentityRole> roles = new List<IdentityRole>(){

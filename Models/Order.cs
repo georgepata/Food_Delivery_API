@@ -10,7 +10,7 @@ public class Order
 {
     public int OrderId {get; set;}    
     public User User {get; set;}
-    public int UserId {get; set;}
+    public string UserId {get; set;}
     public Restaurant Restaurant {get; set;}
     public int RestaurantId {get; set;}
     public Payment Payment {get; set;}

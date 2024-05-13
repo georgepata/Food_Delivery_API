@@ -9,6 +9,8 @@ namespace Food_Delivery_API.Dtos;
 
 public class UserDto
 {
+    public string? UserId {get; set;}
+    [Required]
     public string? Name { get; set; }
     [Required]
     [User_EnsureCorrectEmailFormat]
@@ -18,4 +20,5 @@ public class UserDto
     public string? Phone { get; set; }
     [Required]
     public string Address { get; set; }
+    public string Role {get; set;}
 }
