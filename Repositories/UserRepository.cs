@@ -16,25 +16,25 @@ public class UserRepository : IUserRepository
         _foodDeliveryContext = foodDeliveryContext;
     }
 
-    public User GetUserById(int id)
+    public User GetUserById(string id)
     {
-        return _foodDeliveryContext.Users.Where(u => u.UserId == id).FirstOrDefault();
+        return _foodDeliveryContext.Users.Where(u => u.Id.Equals(id)).FirstOrDefault();
     }
     public bool AddUser(User user)
     {
         _foodDeliveryContext.Add(user);
         return Save();
     }
-    public bool UpdateUser(int id, UserDto userDto)
+    public bool UpdateUser(string id, UserDto userDto)
     {
-        var userToUpdate = _foodDeliveryContext.Users.First(u => u.UserId == id);
-        userToUpdate.Name = userDto.Name;
+        var userToUpdate = _foodDeliveryContext.Users.First(u => u.Id.Equals(id));
+        userToUpdate.UserName = userDto.Name;
         userToUpdate.Email = userDto.Email;
         userToUpdate.Phone = userDto.Phone;
         userToUpdate.Address = userDto.Address;
         return Save();
     }
-    public bool DeleteUser(int userId)
+    public bool DeleteUser(string userId)
     {
         var userToDelete = GetUserById(userId);
         if (userToDelete != null)

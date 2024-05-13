@@ -1,4 +1,5 @@
-﻿using Food_Delivery_API.Data;
+﻿using System.Text.Json.Serialization;
+using Food_Delivery_API.Data;
 using Food_Delivery_API.Interfaces;
 using Food_Delivery_API.Models;
 using Food_Delivery_API.Repositories;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +19,14 @@ builder.Services.AddControllers();
   
 builder.Services.AddDbContext<FoodDeliveryContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("FoodDeliveryContext")));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-// builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<IRestaurantRepository, RestaurantRepository>();
+builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
-// builder.Services.AddIdentity<User, IdentityRole>()
-//         .AddEntityFrameworkStores<FoodDeliveryContext>()
-//         .AddDefaultTokenProviders();
+builder.Services.AddIdentity<User, IdentityRole>()
+        .AddEntityFrameworkStores<FoodDeliveryContext>()
+        .AddDefaultTokenProviders();
 
 // builder.Services.AddScoped<UserManager<User>>();
 
@@ -41,6 +47,14 @@ builder.Services.AddAuthentication(options => {
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
     };
 });
+builder.Services.AddControllers()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
+
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 var app = builder.Build();
 

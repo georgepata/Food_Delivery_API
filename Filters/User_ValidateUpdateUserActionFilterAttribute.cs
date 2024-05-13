@@ -14,7 +14,7 @@ public class User_ValidateUpdateUserActionFilterAttribute : ActionFilterAttribut
         var id = context.ActionArguments["id"] as int?;
         var user = context.ActionArguments["user"] as User;
 
-        if (id.HasValue && user != null && id != user.UserId){
+        if (id.HasValue && user != null && id != int.Parse(user.Id)){
             context.ModelState.AddModelError("UserId", "UserId is not the same as id");
             var problemDetails = new ValidationProblemDetails(){
                 Status = StatusCodes.Status400BadRequest

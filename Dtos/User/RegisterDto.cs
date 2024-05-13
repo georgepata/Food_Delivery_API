@@ -19,4 +19,8 @@ public class RegisterDto
     [Required]
     [User_EnsureCorrectPhoneFormat]
     public string? Phone { get; set; }
+    [Required]
+    public string? Address { get; set; }
+    [Required]
+    public int? CityId {get; set;}
 }

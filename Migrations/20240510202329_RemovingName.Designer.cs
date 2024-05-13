@@ -4,6 +4,7 @@ using Food_Delivery_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Food_Delivery_API.Migrations
 {
     [DbContext(typeof(FoodDeliveryContext))]
-    partial class FoodDeliveryContextModelSnapshot : ModelSnapshot
+    [Migration("20240510202329_RemovingName")]
+    partial class RemovingName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,8 +35,7 @@ namespace Food_Delivery_API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CityId");
 
@@ -79,7 +81,7 @@ namespace Food_Delivery_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RestaurantId")
+                    b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
                     b.HasKey("MenuId");
@@ -206,7 +208,7 @@ namespace Food_Delivery_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RestaurantId"));
 
-                    b.Property<int?>("CityId")
+                    b.Property<int>("CityId")
                         .HasColumnType("int");
 
                     b.Property<string>("Cuisine")
@@ -267,6 +269,11 @@ namespace Food_Delivery_API.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -336,13 +343,13 @@ namespace Food_Delivery_API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d23f7a59-0d10-4883-8ea4-ef8440b1a25f",
+                            Id = "a2d52147-2fc1-40f0-9cb2-061bd83fed32",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "099bee54-c6f3-4338-a829-7ae81b419f01",
+                            Id = "3d8d8b03-33f9-4645-a853-47ce8e0f1930",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -469,7 +476,9 @@ namespace Food_Delivery_API.Migrations
                 {
                     b.HasOne("Food_Delivery_API.Models.Restaurant", "Restaurant")
                         .WithMany("Menus")
-                        .HasForeignKey("RestaurantId");
+                        .HasForeignKey("RestaurantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Restaurant");
                 });
@@ -538,7 +547,9 @@ namespace Food_Delivery_API.Migrations
                 {
                     b.HasOne("Food_Delivery_API.Models.City", "City")
                         .WithMany("Restaurants")
-                        .HasForeignKey("CityId");
+                        .HasForeignKey("CityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("City");
                 });

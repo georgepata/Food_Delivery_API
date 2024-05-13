@@ -9,8 +9,8 @@ namespace Food_Delivery_API.Interfaces;
 
 public interface IUserRepository
 {
-    User GetUserById(int id);
+    User GetUserById(string id);
     bool AddUser(User user);
-    bool UpdateUser(int id, UserDto user);
-    bool DeleteUser(int id);
+    bool UpdateUser(string id, UserDto user);
+    bool DeleteUser(string id);
 }

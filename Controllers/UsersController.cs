@@ -11,6 +11,7 @@ using Food_Delivery_API.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Food_Delivery_API.Controllers;
 
@@ -28,35 +29,74 @@ public class UsersController : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize]
-    [TypeFilter(typeof(User_ValidateUserIdActionFilterAttribute))]
-    public IActionResult GetUserById(int id){
-        return Ok(_userRepository.GetUserById(id));
+    //[TypeFilter(typeof(User_ValidateUserIdActionFilterAttribute))]
+    public IActionResult GetUserById(string id){
+        var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "userId");
+
+        if (userIdClaim == null)
+            return Unauthorized();
+        
+        var userId = userIdClaim.Value;
+
+        var user = _userRepository.GetUserById(id);
+
+        if (user == null || !user.Id.Equals(userId))
+            return Unauthorized();
+
+        var finalUser  = _foodDeliveryContext.Users.Include(c=> c.City).ThenInclude(r => r.Users).FirstOrDefault(c => c.Id.Equals(id));
+        // return Ok(new User{
+        //     Id = user.Id,
+        //     UserName = user.UserName,
+        //     Email = user.Email,
+        //     Phone = user.Phone,
+        //     Address = user.Address,
+
+        // });
+        return Ok(finalUser);
     }
 
-    [HttpPost]
-    [TypeFilter(typeof(User_ValidateCreateUserActionFilterAttribute))]
-    public IActionResult CreateUser([FromBody]UserDto user){
-        var User = new User(){
-            Name = user.Name,
-            Email = user.Email,
-            Phone = user.Phone,
-            Address = user.Address
-        };
-        _userRepository.AddUser(User);
-        return Ok(User);
-    }
+    // [HttpPost]
+    // [TypeFilter(typeof(User_ValidateCreateUserActionFilterAttribute))]
+    // public IActionResult CreateUser([FromBody]UserDto user){
+    //     var User = new User(){
+    //         UserName = user.Name,
+    //         Email = user.Email,
+    //         Phone = user.Phone,
+    //         Address = user.Address
+    //     };
+    //     var UserDto = new UserDto(){
+    //         Name = user.Name,
+    //         Email = user.Email,
+    //         Phone = user.Phone,
+    //         Address = user.Address
+    //     };
+    //     _userRepository.AddUser(User);
+    //     return Ok(UserDto);
+    // }
 
     [HttpPut("{id}")]
     [Authorize]
-    [TypeFilter(typeof(User_ValidateUserIdActionFilterAttribute))]
-    public IActionResult UpdateUser(int id, UserDto userDto){
+    // [TypeFilter(typeof(User_ValidateUserIdActionFilterAttribute))]
+    public IActionResult UpdateUser(string id, UserDto userDto){
+        var userIdClaim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "userId");
+
+        if (userIdClaim == null)
+            return Unauthorized();
+        
+        var userId = userIdClaim.Value;
+
+        var user = _userRepository.GetUserById(id);
+
+        if (user == null || !user.Id.Equals(userId))
+            return Unauthorized();
         _userRepository.UpdateUser(id, userDto);
         return NoContent();
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles="Admin")]
     [TypeFilter(typeof(User_ValidateUserIdActionFilterAttribute))]
-    public IActionResult DeleteUser(int id){
+    public IActionResult DeleteUser(string id){
         var userToDelete = _userRepository.GetUserById(id);
         _userRepository.DeleteUser(id);
         return Ok(userToDelete);
