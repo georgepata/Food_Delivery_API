@@ -51,6 +51,17 @@ public class FoodDeliveryContext : IdentityDbContext<User>
             .HasForeignKey(o => o.RestaurantId)
             .OnDelete(DeleteBehavior.NoAction);
 
+        modelBuilder.Entity<OrderList>()
+            .HasOne(o => o.Order)
+            .WithMany(p => p.OrderLists)
+            .HasForeignKey(o => o.OrderId)
+            .OnDelete(DeleteBehavior.NoAction);
+        
+        modelBuilder.Entity<OrderList>()
+            .HasOne(o=> o.MenuItem)
+            .WithMany(p => p.OrderLists)
+            .HasForeignKey(o => o.MenuItemId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         base.OnModelCreating(modelBuilder);
         List<IdentityRole> roles = new List<IdentityRole>(){

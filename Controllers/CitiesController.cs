@@ -33,6 +33,7 @@ public class CitiesController : ControllerBase
                 .Include(c => c.Users)
                 .Include(c => c.Restaurants)
                 .FirstOrDefault(u => u.CityId == id);
+        Console.WriteLine(city.Users.Count());
         return Ok(city);
     }
 

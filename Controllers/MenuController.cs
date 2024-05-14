@@ -7,6 +7,7 @@ using Food_Delivery_API.Dtos.Menu;
 using Food_Delivery_API.Interfaces;
 using Food_Delivery_API.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Food_Delivery_API.Controllers;
 
@@ -26,7 +27,11 @@ public class MenuController : ControllerBase
 
     [HttpGet("{id}")]
     public IActionResult GetMenuById(int id){
-        var menu = _menuRepository.GetMenuById(id);
+        // var menu = _menuRepository.GetMenuById(id);
+        var menu = _foodDeliveryContext.Menus
+                    .Include(m => m.MenuItems)
+                    .Include(m=> m.Restaurant)
+                    .FirstOrDefault(u => u.MenuId == id);
         return Ok(menu);
     }
 
@@ -59,3 +64,41 @@ public class MenuController : ControllerBase
     }
 }
 
+
+
+/* idee pentru a afisa numai ce vreau ca output folosindu ma de dto
+
+[HttpGet("{id}")]
+public IActionResult GetMenuById(int id)
+{
+    var menu = _foodDeliveryContext.Menus
+                .Include(m => m.MenuItems)
+                .Include(m => m.Restaurant)
+                .FirstOrDefault(u => u.MenuId == id);
+
+    if (menu == null)
+    {
+        return NotFound();
+    }
+
+    // Create MenuDetailsDto object with necessary data
+    var menuDto = new MenuDetailsDto
+    {
+        MenuId = menu.MenuId,
+        Name = menu.Name,
+        RestaurantName = menu.Restaurant?.Name, // Include only the restaurant name
+        MenuItems = menu.MenuItems.Select(mi => new MenuItemDto
+        {
+            MenuItemId = mi.MenuItemId,
+            Name = mi.Name,
+            Price = mi.Price,
+            Description = mi.Description,
+            Rating = mi.Rating
+        }).ToList()
+    };
+
+    return Ok(menuDto);
+}
+
+
+*/
