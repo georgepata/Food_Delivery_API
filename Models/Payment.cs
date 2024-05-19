@@ -12,6 +12,6 @@ public class Payment
     public double Price {get; set;}
     public string PaymentMethod {get; set;}
     [ForeignKey("Order")]
-    public int OrderId {get; set;}
-    public Order Order{get; set;}
+    public int? OrderId {get; set;}
+    public Order? Order{get; set;}
 }

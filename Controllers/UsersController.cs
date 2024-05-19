@@ -43,7 +43,11 @@ public class UsersController : ControllerBase
         if (user == null || !user.Id.Equals(userId))
             return Unauthorized();
 
-        var finalUser  = _foodDeliveryContext.Users.Include(c=> c.City).ThenInclude(r => r.Users).FirstOrDefault(c => c.Id.Equals(id));
+        var finalUser  = _foodDeliveryContext.Users
+            .Include(c=> c.City)
+            .Include(c=> c.Orders)
+            .ThenInclude(u => u.Payment)
+            .FirstOrDefault(c => c.Id.Equals(id));
         // return Ok(new User{
         //     Id = user.Id,
         //     UserName = user.UserName,
@@ -55,24 +59,6 @@ public class UsersController : ControllerBase
         return Ok(finalUser);
     }
 
-    // [HttpPost]
-    // [TypeFilter(typeof(User_ValidateCreateUserActionFilterAttribute))]
-    // public IActionResult CreateUser([FromBody]UserDto user){
-    //     var User = new User(){
-    //         UserName = user.Name,
-    //         Email = user.Email,
-    //         Phone = user.Phone,
-    //         Address = user.Address
-    //     };
-    //     var UserDto = new UserDto(){
-    //         Name = user.Name,
-    //         Email = user.Email,
-    //         Phone = user.Phone,
-    //         Address = user.Address
-    //     };
-    //     _userRepository.AddUser(User);
-    //     return Ok(UserDto);
-    // }
 
     [HttpPut("{id}")]
     [Authorize]

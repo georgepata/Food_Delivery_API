@@ -19,5 +19,5 @@ public class MenuItem
     public double? Rating {get; set;}
     public int MenuId { get; set;}
     public Menu Menu {get; set;}
-    public ICollection<OrderList> OrderLists {get; set;}
+    public ICollection<OrderMenuItem> OrderMenuItems {get; set;}
 }

@@ -4,6 +4,7 @@ using Food_Delivery_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Food_Delivery_API.Migrations
 {
     [DbContext(typeof(FoodDeliveryContext))]
-    partial class FoodDeliveryContextModelSnapshot : ModelSnapshot
+    [Migration("20240516153202_ChangingRestaurantIdInMenu")]
+    partial class ChangingRestaurantIdInMenu
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace Food_Delivery_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Phone")
@@ -62,8 +65,7 @@ namespace Food_Delivery_API.Migrations
                     b.HasKey("DeliveryDriverId");
 
                     b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("DeliveryDrivers");
                 });
@@ -148,32 +150,6 @@ namespace Food_Delivery_API.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Food_Delivery_API.Models.OrderMenuItem", b =>
-                {
-                    b.Property<int>("OrderMenuItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderMenuItemId"));
-
-                    b.Property<int>("MenuItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("OrderMenuItemId");
-
-                    b.HasIndex("MenuItemId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderMenuItem");
-                });
-
             modelBuilder.Entity("Food_Delivery_API.Models.Payment", b =>
                 {
                     b.Property<int>("PaymentId")
@@ -182,7 +158,7 @@ namespace Food_Delivery_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentMethod")
@@ -195,8 +171,7 @@ namespace Food_Delivery_API.Migrations
                     b.HasKey("PaymentId");
 
                     b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -337,6 +312,21 @@ namespace Food_Delivery_API.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("MenuItemOrder", b =>
+                {
+                    b.Property<int>("MenuItemsMenuItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrdersOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MenuItemsMenuItemId", "OrdersOrderId");
+
+                    b.HasIndex("OrdersOrderId");
+
+                    b.ToTable("MenuItemOrder");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -366,13 +356,13 @@ namespace Food_Delivery_API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4a7c3262-b48c-4f8b-8027-dede84cf48e7",
+                            Id = "0f0e4fc0-9da4-451c-a763-1279b232f156",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "50f32355-028c-4361-91ba-699d9b61c31d",
+                            Id = "b3481ae2-7344-40f3-bbcd-fa6df725bc0f",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -488,7 +478,9 @@ namespace Food_Delivery_API.Migrations
                 {
                     b.HasOne("Food_Delivery_API.Models.Order", "Order")
                         .WithOne("DeliveryDriver")
-                        .HasForeignKey("Food_Delivery_API.Models.DeliveryDriver", "OrderId");
+                        .HasForeignKey("Food_Delivery_API.Models.DeliveryDriver", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
                 });
@@ -534,30 +526,13 @@ namespace Food_Delivery_API.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Food_Delivery_API.Models.OrderMenuItem", b =>
-                {
-                    b.HasOne("Food_Delivery_API.Models.MenuItem", "MenuItem")
-                        .WithMany("OrderMenuItems")
-                        .HasForeignKey("MenuItemId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("Food_Delivery_API.Models.Order", "Order")
-                        .WithMany("OrderMenuItems")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("MenuItem");
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("Food_Delivery_API.Models.Payment", b =>
                 {
                     b.HasOne("Food_Delivery_API.Models.Order", "Order")
                         .WithOne("Payment")
-                        .HasForeignKey("Food_Delivery_API.Models.Payment", "OrderId");
+                        .HasForeignKey("Food_Delivery_API.Models.Payment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
                 });
@@ -597,6 +572,21 @@ namespace Food_Delivery_API.Migrations
                         .HasForeignKey("CityId");
 
                     b.Navigation("City");
+                });
+
+            modelBuilder.Entity("MenuItemOrder", b =>
+                {
+                    b.HasOne("Food_Delivery_API.Models.MenuItem", null)
+                        .WithMany()
+                        .HasForeignKey("MenuItemsMenuItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Food_Delivery_API.Models.Order", null)
+                        .WithMany()
+                        .HasForeignKey("OrdersOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -662,17 +652,10 @@ namespace Food_Delivery_API.Migrations
                     b.Navigation("MenuItems");
                 });
 
-            modelBuilder.Entity("Food_Delivery_API.Models.MenuItem", b =>
-                {
-                    b.Navigation("OrderMenuItems");
-                });
-
             modelBuilder.Entity("Food_Delivery_API.Models.Order", b =>
                 {
                     b.Navigation("DeliveryDriver")
                         .IsRequired();
-
-                    b.Navigation("OrderMenuItems");
 
                     b.Navigation("Payment")
                         .IsRequired();

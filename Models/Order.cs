@@ -15,5 +15,5 @@ public class Order
     public int RestaurantId {get; set;}
     public Payment Payment {get; set;}
     public DeliveryDriver DeliveryDriver {get; set;}
-    public ICollection<OrderList> OrderLists {get; set;}
+    public ICollection<OrderMenuItem> OrderMenuItems {get; set;}
 }

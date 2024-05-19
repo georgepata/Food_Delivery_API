@@ -4,6 +4,7 @@ using Food_Delivery_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Food_Delivery_API.Migrations
 {
     [DbContext(typeof(FoodDeliveryContext))]
-    partial class FoodDeliveryContextModelSnapshot : ModelSnapshot
+    [Migration("20240516154144_AddingOrderMenuItem")]
+    partial class AddingOrderMenuItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,7 @@ namespace Food_Delivery_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Phone")
@@ -62,8 +65,7 @@ namespace Food_Delivery_API.Migrations
                     b.HasKey("DeliveryDriverId");
 
                     b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("DeliveryDrivers");
                 });
@@ -182,7 +184,7 @@ namespace Food_Delivery_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentMethod")
@@ -195,8 +197,7 @@ namespace Food_Delivery_API.Migrations
                     b.HasKey("PaymentId");
 
                     b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -366,13 +367,13 @@ namespace Food_Delivery_API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4a7c3262-b48c-4f8b-8027-dede84cf48e7",
+                            Id = "475211b4-d722-4d43-a526-25c842b3755b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "50f32355-028c-4361-91ba-699d9b61c31d",
+                            Id = "c2f2f109-b6ac-4955-9451-60f96cbce146",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -488,7 +489,9 @@ namespace Food_Delivery_API.Migrations
                 {
                     b.HasOne("Food_Delivery_API.Models.Order", "Order")
                         .WithOne("DeliveryDriver")
-                        .HasForeignKey("Food_Delivery_API.Models.DeliveryDriver", "OrderId");
+                        .HasForeignKey("Food_Delivery_API.Models.DeliveryDriver", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
                 });
@@ -557,7 +560,9 @@ namespace Food_Delivery_API.Migrations
                 {
                     b.HasOne("Food_Delivery_API.Models.Order", "Order")
                         .WithOne("Payment")
-                        .HasForeignKey("Food_Delivery_API.Models.Payment", "OrderId");
+                        .HasForeignKey("Food_Delivery_API.Models.Payment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
                 });

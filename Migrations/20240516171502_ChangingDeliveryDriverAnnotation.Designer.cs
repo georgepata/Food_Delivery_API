@@ -4,6 +4,7 @@ using Food_Delivery_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Food_Delivery_API.Migrations
 {
     [DbContext(typeof(FoodDeliveryContext))]
-    partial class FoodDeliveryContextModelSnapshot : ModelSnapshot
+    [Migration("20240516171502_ChangingDeliveryDriverAnnotation")]
+    partial class ChangingDeliveryDriverAnnotation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,7 +185,7 @@ namespace Food_Delivery_API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("PaymentMethod")
@@ -195,8 +198,7 @@ namespace Food_Delivery_API.Migrations
                     b.HasKey("PaymentId");
 
                     b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasFilter("[OrderId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -366,13 +368,13 @@ namespace Food_Delivery_API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4a7c3262-b48c-4f8b-8027-dede84cf48e7",
+                            Id = "e0215b19-4559-4174-a2c1-4818658c5dab",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "50f32355-028c-4361-91ba-699d9b61c31d",
+                            Id = "9a34b0e5-8831-45ce-947b-598058980b0e",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -557,7 +559,9 @@ namespace Food_Delivery_API.Migrations
                 {
                     b.HasOne("Food_Delivery_API.Models.Order", "Order")
                         .WithOne("Payment")
-                        .HasForeignKey("Food_Delivery_API.Models.Payment", "OrderId");
+                        .HasForeignKey("Food_Delivery_API.Models.Payment", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
                 });

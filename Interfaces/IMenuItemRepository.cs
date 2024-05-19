@@ -13,4 +13,5 @@ public interface IMenuItemRepository
     bool AddMenuItem(MenuItem menuItem);
     bool UpdateMenuItem(int id, MenuItemDto menuItemDto);
     bool DeleteMenuItem(int id);
+    MenuItem GetMenuItemByName(string name);
 }

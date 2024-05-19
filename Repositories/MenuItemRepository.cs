@@ -20,6 +20,11 @@ public class MenuItemRepository : IMenuItemRepository
     {
         return _foodDeliveryContext.MenuItems.FirstOrDefault(x => x.MenuItemId == id);
     }
+    public MenuItem GetMenuItemByName(string name)
+    {
+        return _foodDeliveryContext.MenuItems.FirstOrDefault(x=> x.Name == name) ?? null;
+        
+    }
 
     public bool AddMenuItem(MenuItem menuItem)
     {
@@ -49,4 +54,8 @@ public class MenuItemRepository : IMenuItemRepository
         return savedChanges > 0 ? true : false;
     }
 
+    public bool GetRestaurantOfMenuItem(string name)
+    {
+        throw new NotImplementedException();
+    }
 }

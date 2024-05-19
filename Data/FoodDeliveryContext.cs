@@ -51,15 +51,15 @@ public class FoodDeliveryContext : IdentityDbContext<User>
             .HasForeignKey(o => o.RestaurantId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        modelBuilder.Entity<OrderList>()
+        modelBuilder.Entity<OrderMenuItem>()
             .HasOne(o => o.Order)
-            .WithMany(p => p.OrderLists)
+            .WithMany(p => p.OrderMenuItems)
             .HasForeignKey(o => o.OrderId)
             .OnDelete(DeleteBehavior.NoAction);
         
-        modelBuilder.Entity<OrderList>()
-            .HasOne(o=> o.MenuItem)
-            .WithMany(p => p.OrderLists)
+        modelBuilder.Entity<OrderMenuItem>()
+            .HasOne(o => o.MenuItem)
+            .WithMany(p => p.OrderMenuItems)
             .HasForeignKey(o => o.MenuItemId)
             .OnDelete(DeleteBehavior.NoAction);
 

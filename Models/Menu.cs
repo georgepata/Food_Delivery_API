@@ -11,7 +11,7 @@ public class Menu
     public int MenuId {get; set;}
     [Required]
     public string Name {get; set;}
-    public int? RestaurantId {get; set;}
+    public int RestaurantId {get; set;}
     public Restaurant Restaurant {get; set;}
     public ICollection<MenuItem> MenuItems {get; set;}
 }

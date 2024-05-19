@@ -11,7 +11,7 @@ public class DeliveryDriver
     public int DeliveryDriverId { get; set; }   
     public string Name { get; set; } 
     public string Phone {get; set;}   
-    public Order Order{ get; set; }
+    public Order? Order{ get; set; }
     [ForeignKey("Order")]
-    public int OrderId { get; set; }
+    public int? OrderId { get; set; }
 }
