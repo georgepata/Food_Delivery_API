@@ -16,6 +16,10 @@ public class DeliveryDriverRepository : IDeliveryDriverRepository
     {
         _foodDeliveryContext = foodDeliveryContext;
     }
+    public ICollection<DeliveryDriver> GetDeliveryDrivers()
+    {
+        return _foodDeliveryContext.DeliveryDrivers.ToList();
+    }
     public DeliveryDriver GetDeliveryDriver(int id)
     {
         return _foodDeliveryContext.DeliveryDrivers.First(x => x.DeliveryDriverId == id);
@@ -42,9 +46,14 @@ public class DeliveryDriverRepository : IDeliveryDriverRepository
             _foodDeliveryContext.Remove(deliveryDriverToDelete);
         return Save();
     }
+    public DeliveryDriver GetAvailableDeliveryDriver()
+    {
+        return _foodDeliveryContext.DeliveryDrivers.FirstOrDefault(d => d.OrderId == null);
+    }
 
     public bool Save(){
         var savedChanges = _foodDeliveryContext.SaveChanges();
         return savedChanges > 0 ? true : false;
     }
+
 }

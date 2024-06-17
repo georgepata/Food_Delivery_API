@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Food_Delivery_API.Data;
 using Food_Delivery_API.Dtos;
+using Food_Delivery_API.Dtos.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -16,7 +17,7 @@ public class User_ValidateCreateUserActionFilterAttribute : ActionFilterAttribut
         _foodDeliveryContext = foodDeliveryContext;
     }
     public override void OnActionExecuting(ActionExecutingContext context){
-        var user = context.ActionArguments["user"] as UserDto;
+        var user = context.ActionArguments["registerDto"] as RegisterDto;
         if (user == null){
             context.ModelState.AddModelError("User", "User object is null.");
             var problemDetails = new ValidationProblemDetails(context.ModelState){

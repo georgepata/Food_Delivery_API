@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Food_Delivery_API.Dtos;
 
 namespace Food_Delivery_API.Interfaces;
 
-public interface ITokenService
+public interface IEmailSend
 {
-    string CreateToken(UserDto userDto, TimeSpan? timeSpan);
+    Task SendEmailAsync(string email, string subject, string message);
 }

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Food_Delivery_API.Data;
 using Food_Delivery_API.Dtos;
+using Food_Delivery_API.Dtos.User;
 using Food_Delivery_API.Interfaces;
 using Food_Delivery_API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Food_Delivery_API.Repositories;
 
@@ -25,7 +27,7 @@ public class UserRepository : IUserRepository
         _foodDeliveryContext.Add(user);
         return Save();
     }
-    public bool UpdateUser(string id, UserDto userDto)
+    public bool UpdateUser(string id, UpdateUserDto userDto)
     {
         var userToUpdate = _foodDeliveryContext.Users.First(u => u.Id.Equals(id));
         userToUpdate.UserName = userDto.Name;
@@ -45,5 +47,14 @@ public class UserRepository : IUserRepository
     public bool Save(){
         var savedChanges = _foodDeliveryContext.SaveChanges();
         return savedChanges > 0 ? true : false;
+    }
+
+    public User OrderHistory(string id)
+    {
+        return _foodDeliveryContext.Users
+                    .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderMenuItems)
+                    .ThenInclude(m => m.MenuItem)
+                    .FirstOrDefault(u => u.Id == id);
     }
 }

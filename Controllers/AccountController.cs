@@ -5,9 +5,14 @@ using System.Threading.Tasks;
 using Food_Delivery_API.Data;
 using Food_Delivery_API.Dtos;
 using Food_Delivery_API.Dtos.User;
+using Food_Delivery_API.Filters;
+using Food_Delivery_API.Filters.ForgotPasswordVerification;
 using Food_Delivery_API.Interfaces;
 using Food_Delivery_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -20,19 +25,23 @@ public class AccountController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
+    private readonly IEmailSend _emailSender;
     private readonly SignInManager<User> _signingManager;
     private readonly ICityRepository _cityRepository; 
     private readonly FoodDeliveryContext _foodDeliveryContext;
-    public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, ICityRepository cityRepository, FoodDeliveryContext foodDeliveryContext)
+    public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager, ICityRepository cityRepository, 
+                    FoodDeliveryContext foodDeliveryContext, IEmailSend emailSender)
     {
         _userManager = userManager;
         _tokenService = tokenService;
+        _emailSender = emailSender;
         _signingManager = signInManager;
         _cityRepository = cityRepository;
         _foodDeliveryContext = foodDeliveryContext;
     }
 
 [HttpPost("register")]
+[ServiceFilter(typeof(User_ValidateCreateUserActionFilterAttribute))]
 public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
 {
     try
@@ -61,6 +70,7 @@ public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
                 await _foodDeliveryContext.SaveChangesAsync();
             }
             var roleResult = await _userManager.AddToRoleAsync(user, "User");
+            var userTokenLifetime = TimeSpan.FromHours(3);
             if (roleResult.Succeeded){
                 return Ok(
                     new NewUserDto{
@@ -75,7 +85,7 @@ public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
                             Address = user.Address,
                             UserId = user.Id,
                             Role = "User"
-                        })
+                        }, userTokenLifetime)
                     }
                 );
             } 
@@ -90,6 +100,44 @@ public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     }
 }
 
+
+[HttpPost("forgotpassword")]
+[Authorize]
+[ServiceFilter(typeof(EmailVerification<ForgotPasswordRequest>))]
+public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model){
+    var user = await _userManager.FindByEmailAsync(model.Email);
+    if (user == null)
+        return RedirectToAction("ForgotPasswordConfirmation");
+    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+    var callBackUrl = Url.Action(nameof(ResetPassword), "Account", new {
+        token,
+        email = model.Email
+    }, protocol: HttpContext.Request.Scheme);
+    Console.WriteLine("@@@@@@@@@@@@@@@@@@@" + callBackUrl);
+    string subject = "Reset your password!";
+    string message = $"Please reset your password by clicking <a href='{callBackUrl}'>here</a>";
+    await _emailSender.SendEmailAsync(model.Email, subject, message);
+
+    return Ok("Password reset mail sent");
+}
+
+
+[HttpPost("resetpassword")]
+[Authorize]
+[ServiceFilter(typeof(ResetPasswordVerification))]
+public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto model, [FromQuery] string email, [FromQuery] string token){
+    var user = await _userManager.FindByEmailAsync(email);
+    if (user == null)
+        return NotFound("User not found");
+    var result = await _userManager.ResetPasswordAsync(user, token, model.ConfirmedPassword);
+    if (result.Succeeded)
+        return Ok("ResetPasswordConfirmation");
+    foreach(var error in result.Errors)
+        ModelState.AddModelError(string.Empty, error.Description);
+    return BadRequest(ModelState);
+}
+
+
 [HttpPost("login")]
 public async Task<IActionResult> Login([FromBody] LoginDto loginDto){
     if(!ModelState.IsValid)
@@ -100,16 +148,13 @@ public async Task<IActionResult> Login([FromBody] LoginDto loginDto){
         return Unauthorized("Invalid username!");
     
     var result = await _signingManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-
-    var role = await _userManager.GetRolesAsync(user);
-    string finalRole;
-    if (role.Count()==0)
-        finalRole = "User";
-    else finalRole = role.ElementAt(0);
-    
-
     if (!result.Succeeded)
         return Unauthorized("Username not found and/or password incorrect");
+
+    var role = await _userManager.GetRolesAsync(user);
+    string finalRole = role.FirstOrDefault() ?? "User";
+    
+    var tokenLifetime = finalRole.Equals("User", StringComparison.OrdinalIgnoreCase)? TimeSpan.FromHours(3) : TimeSpan.FromDays(365*100);
 
     return Ok(new NewUserDto{
         Name = user.UserName,
@@ -123,8 +168,21 @@ public async Task<IActionResult> Login([FromBody] LoginDto loginDto){
             Address = user.Address,
             UserId = user.Id,
             Role = finalRole
-        })
+        }, tokenLifetime)
     });
+}
+
+
+[HttpPut("changepassword")]
+[Authorize]
+public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto){
+    var userToChange = _userManager.Users.FirstOrDefault(u => u.UserName == changePasswordDto.Name);
+    if (userToChange == null)
+        return NotFound();
+    var result = await _userManager.ChangePasswordAsync(userToChange, changePasswordDto.Password, changePasswordDto.NewPassword);
+    if(!result.Succeeded)
+        return BadRequest(result.Errors);
+    return NoContent();
 }
 
 
@@ -143,6 +201,7 @@ public async Task<IActionResult> AssignAdminRole(string userId)
         var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
 
 
+        var adminTokenLifetime = TimeSpan.FromDays(365 * 100);
         var token = _tokenService.CreateToken(new UserDto{
             UserId = user.Id,
             Name = user.UserName,
@@ -150,7 +209,7 @@ public async Task<IActionResult> AssignAdminRole(string userId)
             Phone = user.Phone,
             Address = user.Address,
             Role = "Admin"
-        });
+        }, adminTokenLifetime);
         if (roleResult.Succeeded)
         {
             return Ok(new NewUserDto{
@@ -171,4 +230,5 @@ public async Task<IActionResult> AssignAdminRole(string userId)
         return StatusCode(500, e.Message);
     }
 }
+
 }

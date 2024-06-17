@@ -20,13 +20,29 @@ public class DeliveryDriverController : ControllerBase
         _deliveryDriverRepository = deliveryDriverRepository;
     }
 
+    [HttpGet("deliverydrivers")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetAllDeliveryDrivers(){
+        var deliveryDrivers = _deliveryDriverRepository.GetDeliveryDrivers();
+        if (deliveryDrivers == null)
+            return BadRequest("No delivery drivers registered");
+        var deliveryDriversDtoList = deliveryDrivers.Select(x => new DeliveryDriverDto{
+            Name = x.Name,
+            Phone = x.Phone
+        });
+        return Ok(deliveryDriversDtoList);
+    }
+
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin")]
     public IActionResult GetDeliveryDriver(int id){
         var deliveryDriver = _deliveryDriverRepository.GetDeliveryDriver(id);
-        if (deliveryDriver != null)
-            return Ok(deliveryDriver);
-        return NotFound();
+        if (deliveryDriver == null)
+            return NotFound();
+        return Ok(new DeliveryDriverDto{
+            Name = deliveryDriver.Name,
+            Phone = deliveryDriver.Phone
+        });
     }
 
     [HttpPost]

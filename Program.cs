@@ -1,5 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Food_Delivery_API.Data;
+using Food_Delivery_API.Filters;
+using Food_Delivery_API.Filters.ForgotPasswordVerification;
 using Food_Delivery_API.Interfaces;
 using Food_Delivery_API.Models;
 using Food_Delivery_API.Repositories;
@@ -27,6 +29,12 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IDeliveryDriverRepository, DeliveryDriverRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEmailSend, EmailSenderService>();
+
+
+builder.Services.AddScoped(typeof(EmailVerification<>));
+builder.Services.AddScoped(typeof(ResetPasswordVerification));
+builder.Services.AddScoped(typeof(User_ValidateCreateUserActionFilterAttribute));
 
 builder.Services.AddIdentity<User, IdentityRole>()
         .AddEntityFrameworkStores<FoodDeliveryContext>()

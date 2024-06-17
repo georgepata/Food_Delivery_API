@@ -19,7 +19,7 @@ namespace Food_Delivery_API.Services;
 [ApiController]
 public class TokenService : ITokenService
 {
-    private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(8);
+    private static readonly TimeSpan DefaultTokenLifetime = TimeSpan.FromHours(8);
     private readonly IConfiguration _configuration;
     private readonly SymmetricSecurityKey _symmetricSecurityKey;
     private readonly UserManager<User> _userManager;
@@ -29,7 +29,7 @@ public class TokenService : ITokenService
         _symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]));
         _userManager = userManager;
     }
-    public string CreateToken(UserDto userDto)
+    public string CreateToken(UserDto userDto, TimeSpan? tokenLifetime = null) 
     {
         var claims = new List<Claim>(){
             new Claim(JwtRegisteredClaimNames.Email, userDto.Email),
@@ -45,7 +45,7 @@ public class TokenService : ITokenService
 
         var tokenDescription = new SecurityTokenDescriptor{
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.Add(TokenLifetime),
+            Expires = DateTime.UtcNow.Add(tokenLifetime ?? DefaultTokenLifetime),
             Issuer = _configuration["JWT:Issuer"],
             Audience = _configuration["JWT:Audience"], 
             SigningCredentials = creds

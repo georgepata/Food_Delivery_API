@@ -146,3 +146,5 @@
 /Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 /Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Newtonsoft.Json.dll
 /Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/Newtonsoft.Json.Bson.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/SendGrid.dll
+/Users/patageorge/Desktop/Home/C#/Food_Delivery_API/Food_Delivery_API/Food_Delivery_API/bin/Debug/net8.0/StarkbankEcdsa.dll

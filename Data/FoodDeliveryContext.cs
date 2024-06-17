@@ -26,6 +26,7 @@ public class FoodDeliveryContext : IdentityDbContext<User>
     public DbSet<RatingRestaurant> RatingRestaurants { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<DeliveryDriver> DeliveryDrivers { get; set; }
+    public DbSet<OrderMenuItem> OrderMenuItems { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder){
         modelBuilder.Entity<Order>()
             .HasOne(o => o.User)
